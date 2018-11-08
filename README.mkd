@@ -8,3 +8,6 @@ This is a wrapper for `pkg-config` allowing nix-unaware applications (e.g.
 ```
 cabal new-build --with-pkg-config=nix-pkgconfig/pkg-config
 ```
+
+Note that some packages respect the `pkg-config` flag to enable `pkg-config`-based native library discovery.
+

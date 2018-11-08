@@ -8,15 +8,15 @@ import textwrap
 
 pkgs = {
     'libusb-1.0': 'libusb1.dev',
-    'libpq': 'postgresql100.dev'
+    'libpq': 'postgresql100',
+    'zlib': 'zlib',
+    'z': 'zlib'
 }
 
-def find_pkg_name(args):
-    for i in args[1:]:
-        if not i.startswith('-'):
-            return i
-
-    return None
+def find_pkg_names(args):
+    return [ arg
+            for arg in args
+            if not arg.startswith('-') ]
 
 def call_pkgconfig(attrs, args):
     nixExpr = """
@@ -44,7 +44,10 @@ def call_pkgconfig(attrs, args):
 
         # Run pkg-config under nix
         cmd = ['nix', 'build', '-f', f.name, '--quiet', 'result']
-        out = subprocess.check_output(cmd)
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        (out, err) = p.communicate()
+        if p.returncode != 0:
+            sys.exit(p.returncode)
 
         # Read the result
         cmd = ['nix', 'eval', '-f', f.name, '--raw', 'result.outPath']
@@ -53,14 +56,24 @@ def call_pkgconfig(attrs, args):
         return out
 
 def main():
-    pkg_name = find_pkg_name(sys.argv)
-    attr = pkgs.get(pkg_name)
-    if attr is not None:
-        result = call_pkgconfig([attr], sys.argv[1:])
-    else:
+    if '--list-all' in sys.argv:
         result = call_pkgconfig([], sys.argv[1:])
+        print(result, end='')
+        print('\n'.join('%s    placeholder from nix-pkgconfig' % pkg
+                        for pkg in pkgs), end='')
+    else:
+        attrs = []
+        for pkg_name in find_pkg_names(sys.argv):
+            attr = pkgs.get(pkg_name)
 
-    print(result, end='')
+            if attr is not None: 
+                attrs.append(attr)
+            else:
+                print("failed to find nix attribute for %s" % pkg_name, file=sys.stderr)
+
+        result = call_pkgconfig(attrs, args)
+
+        print(result, end='')
 
 if __name__ == '__main__':
     main()
