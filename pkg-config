@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+
+import subprocess
+import sys
+import pathlib
+import tempfile
+import textwrap
+
+pkgs = {
+    'libusb-1.0': 'libusb1.dev',
+    'libpq': 'postgresql100.dev'
+}
+
+def find_pkg_name(args):
+    for i in args[1:]:
+        if not i.startswith('-'):
+            return i
+
+    return None
+
+def call_pkgconfig(attrs, args):
+    nixExpr = """
+        let
+          nixpkgs = import <nixpkgs> {{ }};
+        in
+        with nixpkgs; {{
+          result = stdenv.mkDerivation {{
+            name = "pkg-config-test";
+            nativeBuildInputs = [ pkgconfig ];
+            buildInputs = [ {attrs} ];
+            buildCommand = ''
+              mkdir -p $out
+              pkg-config {args} > $out/out
+            '';
+          }};
+        }}
+    """.format(attrs=' '.join(attrs),
+               args=' '.join(args))
+    nixExpr = textwrap.dedent(nixExpr)
+
+    with tempfile.NamedTemporaryFile('w') as f:
+        f.write(nixExpr)
+        f.flush()
+
+        # Run pkg-config under nix
+        cmd = ['nix', 'build', '-f', f.name, '--quiet', 'result']
+        out = subprocess.check_output(cmd)
+
+        # Read the result
+        cmd = ['nix', 'eval', '-f', f.name, '--raw', 'result.outPath']
+        out = pathlib.Path(subprocess.check_output(cmd).decode('UTF-8').strip())
+        out = (out / "out").read_text()
+        return out
+
+def main():
+    pkg_name = find_pkg_name(sys.argv)
+    attr = pkgs.get(pkg_name)
+    if attr is not None:
+        result = call_pkgconfig([attr], sys.argv[1:])
+    else:
+        result = call_pkgconfig([], sys.argv[1:])
+
+    print(result, end='')
+
+if __name__ == '__main__':
+    main()
