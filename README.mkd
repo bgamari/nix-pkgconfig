@@ -1,0 +1,10 @@
+# nix-pkgconfig
+
+This is a wrapper for `pkg-config` allowing nix-unaware applications (e.g.
+`cabal-install`) to use packages from nixpkgs.
+
+## Usage with cabal-install
+
+```
+cabal new-build --with-pkg-config=nix-pkgconfig/pkg-config
+```
