@@ -4,8 +4,7 @@ set -e
 
 if [[ ! -e "$HOME/.cache/nix-index" ]]; then
   echo "nix-index database doesn't exist. Creating..."
-  nix run nixpkgs.nix-index nixpkgs.python3 -c \
-    python3 ./build-pc-index.py
+  nix run nixpkgs.nix-index -c nix-index
 fi
 
 echo "building pkg-config database..."
