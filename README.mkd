@@ -9,5 +9,8 @@ This is a wrapper for `pkg-config` allowing nix-unaware applications (e.g.
 cabal new-build --with-pkg-config=nix-pkgconfig/pkg-config
 ```
 
-Note that some packages respect the `pkg-config` flag to enable `pkg-config`-based native library discovery.
+Note that some packages respect the `pkg-config` flag to enable
+`pkg-config`-based native library discovery.  The included
+`cabal.project.local` includes some `project` stanzas to enable the necessary
+flags with cabal `new-build`.
 
