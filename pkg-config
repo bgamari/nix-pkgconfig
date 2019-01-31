@@ -8,9 +8,13 @@ import tempfile
 import textwrap
 import json
 import os
+from typing import Dict, List, NewType
 from pathlib import Path
 
-def read_databases():
+PackageName = NewType('PackageName', str)
+NixAttr = NewType('NixAttr', str)
+
+def read_databases() -> Dict[PackageName, NixAttr]:
     if 'XDG_CONFIG_HOME' in os.environ:
         config = Path(os.environ['XDG_CONFIG_HOME'])
     else:
@@ -25,12 +29,12 @@ def read_databases():
             pkgs.update(json.load(open(db_file)))
     return pkgs
 
-def find_pkg_names(args):
+def find_pkg_names(args: List[str]):
     return [ arg
             for arg in args
             if not arg.startswith('-') ]
 
-def call_pkgconfig(attrs, args):
+def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
     nixExpr = """
         let
           nixpkgs = import <nixpkgs> {{ }};
@@ -67,7 +71,7 @@ def call_pkgconfig(attrs, args):
         out = (out / "out").read_text()
         return out
 
-def main():
+def main() -> None:
     pkgs = read_databases()
     if '--list-all' in sys.argv:
         result = call_pkgconfig([], sys.argv[1:])
