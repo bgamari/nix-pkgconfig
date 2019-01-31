@@ -54,7 +54,7 @@ def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
         f.flush()
 
         # Run pkg-config under nix
-        cmd = ['nix', 'build', '-f', f.name, '--quiet', 'result']
+        cmd = ['nix', 'build', '-f', f.name, '--quiet', '--no-link', 'result']
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         (out, err) = p.communicate()
         if p.returncode != 0:
