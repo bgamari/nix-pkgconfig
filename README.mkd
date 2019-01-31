@@ -3,10 +3,36 @@
 This is a wrapper for `pkg-config` allowing nix-unaware applications (e.g.
 `cabal-install`) to use packages from nixpkgs.
 
+## Getting started
+
+`nix-pkgconfig` relies on a database of mappings between `pkg-config` `.pc`
+files and the `nixpkgs` attribute they are provided by. A minimal example
+database (`default-database.json`) is included which can be installed via:
+
+```
+$ mkdir -p $HOME/.config/nix-pkgconfig
+$ cp default-database.json $HOME/.config/nix-pkgconfig/database.json
+```
+
+However, it is recommended that you build a more complete database covering
+nearly all of `nixpkgs` can be built using the `build-database.sh` script:
+
+```
+$ ./build-database.sh
+```
+
+A `nix` derivation is provided through `default.nix` provided a wrapper
+for the `pkg-config` script, enabling convenient use on NixOS:
+
+```
+$ nix build -f .
+$ PATH=$(nix eval --raw -f ./default.nix outPath)/bin:$PATH
+```
+
 ## Usage with cabal-install
 
 ```
-cabal new-build --with-pkg-config=nix-pkgconfig/pkg-config
+cabal new-build --with-pkg-config=$PATH_TO_THIS_REPO/pkg-config
 ```
 
 Note that some packages respect the `pkg-config` flag to enable

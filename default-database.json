@@ -1,0 +1,6 @@
+{
+  "libusb-1.0": "libusb1.dev",
+  "libpq": "postgresql100",
+  "zlib": "zlib",
+  "z": "zlib"
+}

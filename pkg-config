@@ -1,17 +1,25 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+import logging
 import subprocess
 import sys
 import pathlib
 import tempfile
 import textwrap
+import json
+import os
+from pathlib import Path
 
-pkgs = {
-    'libusb-1.0': 'libusb1.dev',
-    'libpq': 'postgresql100',
-    'zlib': 'zlib',
-    'z': 'zlib'
-}
+def read_databases():
+    databases = [Path.home() / '.config/nix-pkgconfig/database.json']
+    databases += os.environ.get('NIX_PKGCONFIG_DATABASES', '').split(':')
+
+    pkgs = {}
+    for db_file in databases:
+        if db_file != '' and Path(db_file).exists():
+            logging.debug(f'Reading {db_file}')
+            pkgs.update(json.load(open(db_file)))
+    return pkgs
 
 def find_pkg_names(args):
     return [ arg
@@ -56,6 +64,7 @@ def call_pkgconfig(attrs, args):
         return out
 
 def main():
+    pkgs = read_databases()
     if '--list-all' in sys.argv:
         result = call_pkgconfig([], sys.argv[1:])
         print(result, end='')
@@ -68,8 +77,9 @@ def main():
 
             if attr is not None: 
                 attrs.append(attr)
+                logging.debug(f'package {pkg_name} -> {attr}')
             else:
-                print("failed to find nix attribute for %s" % pkg_name, file=sys.stderr)
+                logging.warn(f'failed to find nix attribute for {pkg_name}')
 
         args = sys.argv[1:]
         result = call_pkgconfig(attrs, args)
