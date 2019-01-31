@@ -63,7 +63,7 @@ def main():
                         for pkg in pkgs), end='')
     else:
         attrs = []
-        for pkg_name in find_pkg_names(sys.argv):
+        for pkg_name in find_pkg_names(sys.argv[1:]):
             attr = pkgs.get(pkg_name)
 
             if attr is not None: 
@@ -71,6 +71,7 @@ def main():
             else:
                 print("failed to find nix attribute for %s" % pkg_name, file=sys.stderr)
 
+        args = sys.argv[1:]
         result = call_pkgconfig(attrs, args)
 
         print(result, end='')
