@@ -31,6 +31,9 @@ $ PATH=$(nix eval --raw -f ./default.nix outPath)/bin:$PATH
 
 ## Usage with cabal-install
 
+To use this with `cabal-install` you may either place `pkg-config` in `PATH` as
+described above or explicitly point `cabal` at the `pkg-config` script:
+
 ```
 cabal new-build --with-pkg-config=$PATH_TO_THIS_REPO/pkg-config
 ```
