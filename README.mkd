@@ -1,7 +1,8 @@
 # nix-pkgconfig
 
-This is a wrapper for `pkg-config` allowing nix-unaware applications (e.g.
+`nix-pkgconfig` is a wrapper for `pkg-config` allowing nix-unaware applications (e.g.
 `cabal-install`) to use packages from nixpkgs.
+
 
 ## Getting started
 
@@ -28,6 +29,11 @@ for the `pkg-config` script, enabling convenient use on NixOS:
 $ nix build -f .
 $ PATH=$(nix eval --raw -f ./default.nix outPath)/bin:$PATH
 ```
+
+When called the `pkg-config` wrapper will consult the database looking for the
+`nix` derivation providing each requested package, build it, and run the
+requested `pkg-config` invocation.
+
 
 ## Usage with cabal-install
 
