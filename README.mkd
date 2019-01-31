@@ -32,7 +32,12 @@ $ PATH=$(nix eval --raw -f ./default.nix outPath)/bin:$PATH
 
 When called the `pkg-config` wrapper will consult the database looking for the
 `nix` derivation providing each requested package, build it, and run the
-requested `pkg-config` invocation.
+requested `pkg-config` invocation. For instance, we can run:
+
+```
+$ pkg-config --cflags libpq
+-I/nix/store/53kwps1ndh29wgjjwa7qf06ygvjxfs09-postgresql-9.6.11/include
+```
 
 
 ## Usage with cabal-install
