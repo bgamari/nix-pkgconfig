@@ -29,11 +29,6 @@ def read_databases() -> Dict[PackageName, NixAttr]:
             pkgs.update(json.load(open(db_file)))
     return pkgs
 
-def find_pkg_names(args: List[str]):
-    return [ arg
-            for arg in args
-            if not arg.startswith('-') ]
-
 def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
     nixExpr = """
         let
@@ -80,7 +75,11 @@ def main() -> None:
                         for pkg in pkgs), end='')
     else:
         attrs = []
-        for pkg_name in find_pkg_names(sys.argv[1:]):
+        pkg_names = [ arg
+                      for arg in sys.argv[1:]
+                      if not arg.startswith('-') ]
+
+        for pkg_name in pkg_names:
             attr = pkgs.get(pkg_name)
 
             if attr is not None: 
