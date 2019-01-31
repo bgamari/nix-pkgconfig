@@ -12,6 +12,8 @@ nix run nixpkgs.nix-index nixpkgs.python3 -c \
   python3 ./build-pc-index.py -o database.json
 
 echo "installing database..."
-mkdir -p $HOME/.config/nix-pkgconfig
-mv database.json $HOME/.config/nix-pkgconfig
+dest=$HOME/.config/nix-pkgconfig
+mkdir -p $dest
+cp default-database.json $dest/001-default.json
+mv database.json $dest/002-nixpkgs.json
 echo "done."

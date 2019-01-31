@@ -15,7 +15,7 @@ def read_databases():
         config = Path(os.environ['XDG_CONFIG_HOME'])
     else:
         config = Path.home() / '.config'
-    databases = [config / 'nix-pkgconfig' / 'database.json']
+    databases = sorted((config / 'nix-pkgconfig').glob('*.json'))
     databases += os.environ.get('NIX_PKGCONFIG_DATABASES', '').split(':')
 
     pkgs = {}

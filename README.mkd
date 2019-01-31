@@ -12,7 +12,7 @@ database (`default-database.json`) is included which can be installed via:
 
 ```
 $ mkdir -p $HOME/.config/nix-pkgconfig
-$ cp default-database.json $HOME/.config/nix-pkgconfig/database.json
+$ cp default-database.json $HOME/.config/nix-pkgconfig/001-default.json
 ```
 
 However, it is recommended that you build a more complete database covering
