@@ -38,5 +38,6 @@ cabal new-build --with-pkg-config=$PATH_TO_THIS_REPO/pkg-config
 Note that some packages respect the `pkg-config` flag to enable
 `pkg-config`-based native library discovery.  The included
 `cabal.project.local` includes some `project` stanzas to enable the necessary
-flags with cabal `new-build`.
+flags with cabal `new-build`. Copy these into your project's
+`cabal.project.local` if you intend you using `nix-pkgconfig`.
 
