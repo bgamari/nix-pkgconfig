@@ -6,14 +6,13 @@ from typing import Dict
 import json
 
 def find_pc_files(nix_locate_db: str=None) -> Dict[str, str]:
-    args = ['nix-locate', '-1', '-r', '--top-level', '.*\.pc$']
+    args = ['nix-locate', '-r', '--top-level', '.*\.pc$']
     if nix_locate_db is not None:
         args += ['-d', nix_locate_db]
 
     out = check_output(args)
     pc_files = {}
     for line in out.decode('UTF-8').split('\n'):
-        print(line)
         parts = line.split()
         if len(parts) == 0:
             continue
@@ -34,6 +33,7 @@ def main() -> None:
     args = parser.parse_args()
 
     pc_files = find_pc_files(nix_locate_db=args.database)
+    print(f"Found {len(pc_files)} pc files.")
     json.dump(pc_files, args.output)
 
 if __name__ == '__main__':
