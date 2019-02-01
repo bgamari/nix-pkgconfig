@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from time import time
 import logging
 import subprocess
 import sys
@@ -52,6 +53,14 @@ def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
     with tempfile.NamedTemporaryFile('w') as f:
         f.write(nixExpr)
         f.flush()
+
+        # Build the attribute and register roots
+        root_dir = Path.cwd() / '.nix-pkgconfig' / 'roots'
+        root_dir.mkdir(parents=True, exist_ok=True)
+        # HACK: Use time as unique name
+        link = root_dir / f'result-{time()}'
+        args = ['nix', 'build', '-f', '<nixpkgs>', '-o', link] + attrs
+        subprocess.check_output(args)
 
         # Run pkg-config under nix
         cmd = ['nix', 'build', '-f', f.name, '--quiet', '--no-link', 'result']
