@@ -1,7 +1,8 @@
 # nix-pkgconfig
 
 `nix-pkgconfig` is a wrapper for `pkg-config` allowing nix-unaware applications (e.g.
-`cabal-install`) to use packages from nixpkgs.
+`cabal-install`) to use packages from `nixpkgs` (to satisfy native library
+dependencies).
 
 
 ## Getting started
@@ -11,8 +12,8 @@ files and the `nixpkgs` attribute they are provided by. A minimal example
 database (`default-database.json`) is included which can be installed via:
 
 ```
-$ mkdir -p $HOME/.config/nix-pkgconfig
-$ cp default-database.json $HOME/.config/nix-pkgconfig/001-default.json
+$ mkdir -p $XDG_CONFIG_HOME/nix-pkgconfig
+$ cp default-database.json $XDG_CONFIG_HOME/nix-pkgconfig/001-default.json
 ```
 
 However, it is recommended that you build a more complete database covering
