@@ -57,10 +57,10 @@ def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
         # Build the attribute and register roots
         root_dir = Path.cwd() / '.nix-pkgconfig' / 'roots'
         root_dir.mkdir(parents=True, exist_ok=True)
-        # HACK: Use time as unique name
         link = root_dir / f'result-{time()}'
-        args = ['nix', 'build', '-f', '<nixpkgs>', '-o', link] + attrs
-        subprocess.check_output(args)
+        if len(attrs) > 0:
+            args = ['nix', 'build', '-f', '<nixpkgs>', '-o', link] + attrs
+            subprocess.check_output(args)
 
         # Run pkg-config under nix
         cmd = ['nix', 'build', '-f', f.name, '--quiet', '--no-link', 'result']
