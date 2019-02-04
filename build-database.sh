@@ -2,6 +2,14 @@
 
 set -e
 
+if [[ -z "$XDG_CACHE_HOME" ]]; then
+  XDG_CACHE_HOME="$HOME/.cache"
+fi
+
+if [[ -z "$XDG_CONFIG_HOME" ]]; then
+  XDG_CONFIG_HOME="$HOME/.config"
+fi
+
 if [[ ! -e "$XDG_CACHE_HOME/nix-index" ]]; then
   echo "nix-index database doesn't exist. Creating..."
   nix run nixpkgs.nix-index -c nix-index
