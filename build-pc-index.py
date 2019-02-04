@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
+import logging
 from subprocess import check_output
 from pathlib import Path
 from typing import Dict
 import json
+
+EXCLUDED_ATTRS = {
+    "emscripten.out" # Conflicts with zlib
+}
 
 def find_pc_files(nix_locate_db: str=None) -> Dict[str, str]:
     args = ['nix-locate', '-r', '--top-level', '.*\.pc$']
@@ -19,7 +24,11 @@ def find_pc_files(nix_locate_db: str=None) -> Dict[str, str]:
         attr = parts[0]
         pc_file = parts[-1]
         pc_name = Path(pc_file).stem
-        pc_files[pc_name] = attr
+        if attr in EXCLUDED_ATTRS:
+            logging.debug(f'Skipped {pc_name} from {attr}.')
+        else:
+            logging.debug(f"In {attr}: {pc_name} ({pc_file})")
+            pc_files[pc_name] = attr
 
     return pc_files
 
@@ -30,7 +39,12 @@ def main() -> None:
                         help="output nix-pkgconfig database file")
     parser.add_argument('-d', '--database', type=str,
                         help="input nix-locate database file")
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help="produce debug output")
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
 
     pc_files = find_pc_files(nix_locate_db=args.database)
     print(f"Found {len(pc_files)} pc files.")
