@@ -50,6 +50,10 @@ described above or explicitly point `cabal` at the `pkg-config` script:
 cabal new-build --with-pkg-config=$PATH_TO_THIS_REPO/pkg-config
 ```
 
+Alternatively, you might consider either adding `nix-pkgconfig` to
+`environment.systemPackages` or your account's mutate environment (e.g.
+`nix-env -i -f .`).
+
 Note that some packages respect the `pkg-config` flag to enable
 `pkg-config`-based native library discovery.  The included
 `cabal.project.local` includes some `project` stanzas to enable the necessary
