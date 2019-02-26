@@ -27,7 +27,7 @@ A `nix` derivation is provided through `default.nix` provided a wrapper
 for the `pkg-config` script, enabling convenient use on NixOS:
 
 ```
-$ nix build -f .
+$ nix build -f . --no-out-link
 $ PATH=$(nix eval --raw -f ./default.nix outPath)/bin:$PATH
 ```
 
