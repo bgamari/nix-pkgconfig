@@ -27,7 +27,7 @@ A `nix` derivation is provided through `default.nix` provided a wrapper
 for the `pkg-config` script, enabling convenient use on NixOS:
 
 ```
-$ nix build -f .
+$ nix build -f . --no-out-link
 $ PATH=$(nix eval --raw -f ./default.nix outPath)/bin:$PATH
 ```
 
@@ -49,6 +49,10 @@ described above or explicitly point `cabal` at the `pkg-config` script:
 ```
 cabal new-build --with-pkg-config=$PATH_TO_THIS_REPO/pkg-config
 ```
+
+Alternatively, you might consider either adding `nix-pkgconfig` to
+`environment.systemPackages` or your account's mutate environment (e.g.
+`nix-env -i -f .`).
 
 Note that some packages respect the `pkg-config` flag to enable
 `pkg-config`-based native library discovery.  The included
