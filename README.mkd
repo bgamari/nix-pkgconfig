@@ -51,7 +51,7 @@ cabal new-build --with-pkg-config=$PATH_TO_THIS_REPO/pkg-config
 ```
 
 Alternatively, you might consider either adding `nix-pkgconfig` to
-`environment.systemPackages` or your account's mutate environment (e.g.
+`environment.systemPackages` or your account's mutable environment (e.g.
 `nix-env -i -f .`).
 
 Note that some packages respect the `pkg-config` flag to enable
