@@ -17,17 +17,17 @@ $ cp default-database.json $XDG_CONFIG_HOME/nix-pkgconfig/001-default.json
 ```
 
 However, it is recommended that you build a more complete database covering
-nearly all of `nixpkgs` can be built using the `build-database.sh` script:
+nearly all of `nixpkgs`. This can be built using the `build-database.sh` script:
 
 ```
 $ ./build-database.sh
 ```
 
-A `nix` derivation is provided through `default.nix` provided a wrapper
+A `nix` derivation is provided through `default.nix` which creates a wrapper
 for the `pkg-config` script, enabling convenient use on NixOS:
 
 ```
-$ nix build -f . --no-out-link
+$ nix build -f . --no-link
 $ PATH=$(nix eval --raw -f ./default.nix outPath)/bin:$PATH
 ```
 
@@ -58,5 +58,4 @@ Note that some packages respect the `pkg-config` flag to enable
 `pkg-config`-based native library discovery.  The included
 `cabal.project.local` includes some `project` stanzas to enable the necessary
 flags with cabal `new-build`. Copy these into your project's
-`cabal.project.local` if you intend you using `nix-pkgconfig`.
-
+`cabal.project.local` if you intend on using `nix-pkgconfig`.
