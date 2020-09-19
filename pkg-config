@@ -9,20 +9,23 @@ import tempfile
 import textwrap
 import json
 import os
-from typing import Dict, List, NewType
+from typing import Dict, List, NewType, Set
 from pathlib import Path
 
 PackageName = NewType('PackageName', str)
 NixAttr = NewType('NixAttr', str)
 
-def read_databases() -> Dict[PackageName, NixAttr]:
-    if 'XDG_CONFIG_HOME' in os.environ:
-        config = Path(os.environ['XDG_CONFIG_HOME'])
+def find_databases() -> Set[Path]:
+    if 'NIX_PKGCONFIG_DATABASES' in os.environ:
+        return os.environ['NIX_PKGCONFIG_DATABASES'].split(':')
     else:
-        config = Path.home() / '.config'
-    databases = sorted((config / 'nix-pkgconfig').glob('*.json'))
-    databases += os.environ.get('NIX_PKGCONFIG_DATABASES', '').split(':')
+        if 'XDG_CONFIG_HOME' in os.environ:
+            config = Path(os.environ['XDG_CONFIG_HOME'])
+        else:
+            config = Path.home() / '.config'
+        return sorted((config / 'nix-pkgconfig').glob('*.json'))
 
+def read_databases(databases: Set[Path]) -> Dict[PackageName, NixAttr]:
     pkgs = {}
     for db_file in databases:
         if db_file != '' and Path(db_file).exists():
@@ -76,7 +79,8 @@ def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
         return out
 
 def main() -> None:
-    pkgs = read_databases()
+    dbs = find_databases()
+    pkgs = read_databases(dbs)
     if '--list-all' in sys.argv:
         result = call_pkgconfig([], sys.argv[1:])
         print(result, end='')
