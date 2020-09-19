@@ -33,10 +33,17 @@ def read_databases(databases: Set[Path]) -> Dict[PackageName, NixAttr]:
             pkgs.update(json.load(open(db_file)))
     return pkgs
 
+def find_nixpkgs() -> str:
+    if 'NIX_PKGCONFIG_NIXPKGS_PATH' in os.environ:
+        return os.environ['NIX_PKGCONFIG_NIXPKGS_PATH']
+    else:
+        return '<nixpkgs>'
+
 def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
+    nixpkgs = find_nixpkgs()
     nixExpr = """
         let
-          nixpkgs = import <nixpkgs> {{ }};
+          nixpkgs = import {nixpkgs} {{ }};
         in
         with nixpkgs; {{
           result = stdenv.mkDerivation {{
@@ -50,7 +57,8 @@ def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
           }};
         }}
     """.format(attrs=' '.join(attrs),
-               args=' '.join(args))
+               args=' '.join(args),
+               nixpkgs=nixpkgs)
     nixExpr = textwrap.dedent(nixExpr)
 
     with tempfile.NamedTemporaryFile('w') as f:
@@ -62,7 +70,7 @@ def call_pkgconfig(attrs: List[NixAttr], args: List[str]) -> str:
         root_dir.mkdir(parents=True, exist_ok=True)
         link = root_dir / f'result-{time()}'
         if len(attrs) > 0:
-            args = ['nix', 'build', '-f', '<nixpkgs>', '-o', link] + attrs
+            args = ['nix', 'build', '-f', nixpkgs, '-o', link] + attrs
             subprocess.check_output(args)
 
         # Run pkg-config under nix
