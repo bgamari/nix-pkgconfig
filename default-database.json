@@ -5,5 +5,6 @@
   "z": "zlib",
   "fftw3f": "fftwFloat",
   "fftw3": "fftwDouble",
-  "openssl": "openssl"
+  "openssl": "openssl",
+  "sdl2": "SDL2"
 }
