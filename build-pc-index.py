@@ -5,7 +5,9 @@ from subprocess import check_output
 from pathlib import Path
 from typing import Dict
 import json
+import re
 
+INTERESTING_RE = re.compile('\/nix\/store\/[-a-zA-Z0-9\.]+/lib/pkgconfig/.*\.pc')
 EXCLUDED_ATTRS = {
     "emscripten.out" # Conflicts with zlib
 }
@@ -22,15 +24,25 @@ def find_pc_files(nix_locate_db: str=None) -> Dict[str, str]:
         if len(parts) == 0:
             continue
         attr = parts[0]
-        pc_file = parts[-1]
-        pc_name = Path(pc_file).stem
-        if attr in EXCLUDED_ATTRS:
-            logging.debug(f'Skipped {pc_name} from {attr}.')
-        else:
+        pc_file = Path(parts[-1])
+        pc_name = pc_file.stem
+        if is_interesting_pc_file(attr, pc_file):
             logging.debug(f"In {attr}: {pc_name} ({pc_file})")
             pc_files[pc_name] = attr
+        else:
+            logging.debug(f'Skipped {pc_name} from {attr}.')
 
     return pc_files
+
+def is_interesting_pc_file(attr: str, pc_file: Path) -> bool:
+    if attr in EXCLUDED_ATTRS:
+        return False
+
+    if INTERESTING_RE.match(str(pc_file)) is None:
+        return False
+
+    return True
+
 
 def main() -> None:
     import argparse
