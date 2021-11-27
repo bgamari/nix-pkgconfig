@@ -32,9 +32,9 @@ echo "building pkg-config database..."
 nix run nixpkgs.nix-index nixpkgs.python3 -c \
   python3 ./build-pc-index.py -o database.json
 
-echo "installing database..."
-dest=$XDG_CONFIG_HOME/nix-pkgconfig
+dest="$XDG_CONFIG_HOME/nix-pkgconfig"
 mkdir -p $dest
+echo "installing database to $dest..."
 cp default-database.json $dest/001-default.json
 mv database.json $dest/002-nixpkgs.json
 echo "done."
