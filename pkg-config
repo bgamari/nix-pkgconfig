@@ -107,7 +107,7 @@ def main() -> None:
                 attrs.append(attr)
                 logging.debug(f'package {pkg_name} -> {attr}')
             else:
-                logging.warn(f'failed to find nix attribute for {pkg_name}')
+                logging.warning(f'failed to find nix attribute for {pkg_name}')
 
         args = sys.argv[1:]
         result = call_pkgconfig(attrs, args)
